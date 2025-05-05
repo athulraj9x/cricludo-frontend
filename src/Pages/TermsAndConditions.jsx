@@ -1,5 +1,6 @@
 import React from 'react';
 import image from '../assets/cricludo_logo_final.jpg';
+import { Link } from 'react-router-dom';
 
 function TermsAndConditions() {
   return (
@@ -8,11 +9,20 @@ function TermsAndConditions() {
       style={{ backgroundImage: `url(${image})` }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black opacity-[.50] z-0"></div>
+      <div className="absolute inset-0 bg-black opacity-[.50] z-0 "></div>
 
       {/* Content */}
       <div className="relative z-10 px-40 py-20">
-        <h1 className="text-2xl font-bold mb-4">Terms and Conditions</h1>
+         {/* Header and Button Row */}
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Terms and Conditions</h1>
+          <Link
+            to="/privacy-policy"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded"
+          >
+            Privacy Policy
+          </Link>
+        </div>
 
         <p className="mb-4">
           By downloading or using <strong>CricLudo</strong>, you agree to the following terms and conditions:

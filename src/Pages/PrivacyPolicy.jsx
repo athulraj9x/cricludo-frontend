@@ -1,5 +1,6 @@
 import React from 'react';
 import bgImage from '../assets/cricludo_logo_final.jpg'
+import { Link } from 'react-router-dom';
 function PrivacyPolicy() {
   return (
     <div
@@ -8,11 +9,20 @@ function PrivacyPolicy() {
 
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black opacity-[.50] z-0 "></div>
+      <div className="absolute inset-0 bg-black opacity-[.50] z-0"></div>
 
       {/* Content */}
       <div className="relative z-10 px-40 py-20">
-        <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
+      <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Privacy Policy</h1>
+          <Link
+            to="/terms-and-conditions"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded"
+          >
+            Terms and Conditions
+          </Link>
+        </div>
+        
 
         <p className="mb-4">
           We appreciate your interest in <strong>CricLudo</strong> and thank you for choosing to be part of our gaming community. Your privacy is important to us, and this Privacy Policy describes how your information is collected, used, and protected when you use our mobile game.
