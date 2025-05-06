@@ -1,26 +1,21 @@
 import React from 'react';
-import bgImage from '../assets/cricludo_logo_final.jpg'
+import image from '../assets/playground.png';
 import { Link } from 'react-router-dom';
+import Navigation from '../Components/Navigation';
 function PrivacyPolicy() {
   return (
     <div
-      className="relative p-6 w-full mx-auto text-white bg-cover bg-center bg-no-repeat min-h-screen"
-      style={{ backgroundImage: `url(${bgImage})` }}
+      className="relative w-full mx-auto text-white bg-cover bg-center bg-no-repeat h-[100dvh] "
+      style={{ backgroundImage: `url(${image})` }}
 
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black opacity-[.50] z-0"></div>
 
       {/* Content */}
-      <div className="relative z-10 px-40 py-20">
-      <div className="flex justify-between items-center mb-4">
+      <div className="px-14 py-12 lg:px-40 lg:py-20 flex justify-center flex-col">
+         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Privacy Policy</h1>
-          <Link
-            to="/terms-and-conditions"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded"
-          >
-            Terms and Conditions
-          </Link>
+          
         </div>
         
 
@@ -72,6 +67,7 @@ function PrivacyPolicy() {
           If you have any concerns or inquiries about how your data is handled, you may contact us at: <a href="mailto:info@9xtechnology.com" className="text-blue-400 underline">info@9xtechnology.com</a>
         </p>
       </div>
+      <Navigation/>
     </div>
   );
 }
