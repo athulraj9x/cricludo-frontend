@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import UserAvatar from "@/components/user-avatar";
 import { convertSecondsToHHMMSS } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   id: z.string(),
@@ -132,19 +133,16 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 export default function DashboardPage() {
   const userTableData = useAnalysisStore((state) => state.userTableData);
   const chartData = useAnalysisStore((state) => state.chartData);
-  const loadingData = useAnalysisStore((state) => state.loading);
+  const user = useAuthStore((s)=> s.user);
+  const router = useRouter();
 
   const setTitle = useAuthStore((t) => t.setTitle);
   useEffect(() => {
     setTitle('Dashboard Overview');
-  }, [setTitle]);
-  if (loadingData) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/75">
-        <Spinner />
-      </div>
-    );
-  }
+    if(user.userType === 'agent'){
+      router.push(`user/${user?.user?.id || ''}`)
+    }
+  }, [setTitle, user]);
 
   return (
     <div className="flex flex-1 flex-col">

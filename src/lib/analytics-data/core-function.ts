@@ -51,10 +51,10 @@ export function prepareDashboardData(data: {
   const todayRoomSettled = countGamesSettledToday(settledgames)
 
   const userTableData = users.map((user) => {
-    const analysis = analysisData.find((a) => a.userId === user._id) || {};
-    const wallet = userwallets.find((w) => w.userId === user._id) || {};
+    const analysis = (analysisData ?? []).find((a) => a.userId === user._id) || {};
+    const wallet = (userwallets ?? []).find((w) => w.userId === user._id) || {};
     const userMatch = usersChartData[user._id]?.matches || [];
-    const userGameSession = analysis.gameSessions || [];
+    const userGameSession = analysis?.gameSessions || [];
 
    
 
@@ -84,6 +84,7 @@ export function prepareDashboardData(data: {
       userMatches: mergeGameData(userMatch,userGameSession)
     };
   });
+  console.log("userTableData===>", userTableData)
   const chartData = {daily: generateChartData(users, settledgames, 'daily'),
      monthly: generateChartData(users, settledgames , 'monthly'), yearly : generateChartData(users, settledgames, 'yearly')};
   // useAnalysisStore.getState().setTotalUsers(totalUsers);

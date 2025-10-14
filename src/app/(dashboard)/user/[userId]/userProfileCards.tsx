@@ -75,20 +75,20 @@ const lastSeenAgo =
           <div className="relative w-24 h-24 mx-auto">
             <Avatar
               className={`w-24 h-24 ring-2 ring-offset-2 ${
-                user.isVIP ? "ring-yellow-400" : "ring-primary"
+                user?.isVIP ? "ring-yellow-400" : "ring-primary"
               }`}
             >
-              <AvatarImage src={user.profilePic} alt={user.username} />
-              <AvatarFallback className="bg-accent text-black ring-2 ring-offset-2 flex items-center justify-center text-3xl font-medium">{capitalize(user.username.charAt(0) || '')}</AvatarFallback>
+              <AvatarImage src={user?.profilePic} alt={user?.username} />
+              <AvatarFallback className="bg-accent text-black ring-2 ring-offset-2 flex items-center justify-center text-3xl font-medium">{capitalize(user?.username.charAt(0) || '')}</AvatarFallback>
             </Avatar>
 
-            {user.isVIP && (
+            {user?.isVIP && (
               <div className="absolute -bottom-1 -right-1 bg-yellow-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
                 <IconCrown size={14} className="mr-1" />
                 <span className="text-xs font-semibold">VIP</span>
               </div>
             )}
-            {user.isGuest && (
+            {user?.isGuest && (
               <div className="absolute -bottom-1 -right-1 bg-blue-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-primary">
                 <IconRating12Plus size={14} className="mr-1" />
                 <span className="text-xs font-semibold">Guest</span>
@@ -97,12 +97,12 @@ const lastSeenAgo =
           </div>
 
           <CardTitle className="text-xl font-bold text-center tracking-tight">
-            {user.username}
+            {user?.username}
           </CardTitle>
 
           <CardDescription className="text-sm text-center text-muted-foreground">
-            <a href={`mailto:${user.email}`} className="hover:underline">
-              {user.email}
+            <a href={`mailto:${user?.email}`} className="hover:underline">
+              {user?.email}
             </a>
           </CardDescription>
         </CardHeader>
@@ -118,10 +118,10 @@ const lastSeenAgo =
           </Badge>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-4 text-sm">
-          <Stat label="Games Joined" value={user.totalGamesJoined} />
-          <Stat label="Wins" value={user.wins} />
-          <Stat label="Losses" value={user.losses} />
-          <Stat label="Rooms Created" value={user.totalRoomsCreated} />
+          <Stat label="Games Joined" value={user?.totalGamesJoined || 0} />
+          <Stat label="Wins" value={user?.wins || 0} />
+          <Stat label="Losses" value={user?.losses || 0} />
+          <Stat label="Rooms Created" value={user?.totalRoomsCreated || 0} />
         </CardContent>
       </Card>
 
@@ -134,17 +134,17 @@ const lastSeenAgo =
           <WalletItem
             icon={<IconCoins size={16} />}
             label="Coins"
-            value={user.coin}
+            value={user?.coin || 0}
           />
           <WalletItem
             icon={<IconDiamond size={16} />}
             label="Diamonds"
-            value={user.diamond}
+            value={user?.diamond || 0}
           />
           <WalletItem
             icon={<IconHeart size={16} />}
             label="Lives"
-            value={user.live}
+            value={user?.live || 0}
           />
         </CardContent>
       </Card>
@@ -159,10 +159,10 @@ const lastSeenAgo =
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-muted-foreground">
               <IconCalendarTime size={16} />
-              {user.active ? "Status" : "Last Login"}
+              {user?.active ? "Status" : "Last Login"}
             </span>
 
-            {user.active ? (
+            {user?.active ? (
               <span className="flex items-center gap-2 text-green-600 font-semibold">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 Active
@@ -180,7 +180,7 @@ const lastSeenAgo =
               Performance Rating
             </span>
             <span className="font-semibold text-base">
-              {user.rating.toFixed(1)}%
+              {user?.rating.toFixed(1)}%
             </span>
           </div>
 

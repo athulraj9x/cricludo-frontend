@@ -1,11 +1,13 @@
-"use client";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import { fetcher } from "@/lib/fetcher";
+import { useAnalysisStore } from "@/store/analysisStore";
+import { prepareDashboardData } from "@/lib/analytics-data";
 import { API_URL } from "@/lib/config";
+import { fetcher } from "@/lib/fetcher";
 
 export function useUsersAnalysisData() {
   const router = useRouter();
+  const store = useAnalysisStore.getState();
 
   const swr = useSWR(
     `${API_URL}/analysis/data`,
@@ -20,10 +22,42 @@ export function useUsersAnalysisData() {
       return res;
     },
     {
-      refreshInterval: 60_000, // 10 second polling
-      revalidateOnFocus: false, // disable refetch on window/tab focus
-      revalidateOnReconnect: false, // disable refetch on reconnect
-      dedupingInterval: 60_000, // prevent duplicate requests within 10 second
+      refreshInterval: 60_000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 60_000,
+
+      onSuccess: (newData) => {
+        if (!newData?.data) return;
+
+        const {
+          totalUsers,
+          activeUsers,
+          activeUserPercent,
+          totalRoomsCreated,
+          todayRoomSettled,
+          totalCoin,
+          totalDiamond,
+          totalLives,
+          roomsByDate,
+          userTableData,
+          chartData,
+        } = prepareDashboardData(newData.data);
+
+        store.setLoading(true);
+        store.setTotalUsers(totalUsers);
+        store.setActiveUsers(activeUsers);
+        store.setActiveUserPercent(activeUserPercent);
+        store.setTotalRoomsCreated(totalRoomsCreated);
+        store.setTodayRoomSettled(todayRoomSettled);
+        store.setTotalCoin(totalCoin);
+        store.setTotalDiamond(totalDiamond);
+        store.setTotalLives(totalLives);
+        store.setRoomsByDate(roomsByDate);
+        store.setUserTableData(userTableData);
+        store.setChartData(chartData);
+        store.setLoading(false);
+      },
     }
   );
 

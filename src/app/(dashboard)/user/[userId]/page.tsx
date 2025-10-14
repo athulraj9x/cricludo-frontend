@@ -11,6 +11,8 @@ import { format } from "date-fns";
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { mutate } from "swr";
+import { API_URL } from "@/lib/config";
 
 const gameSessionSchema = z.object({
   id: z.string(),
@@ -125,12 +127,14 @@ const gameSessionColumns: ColumnDef<GameSession>[] = [
 export default function userDashboard() {
   const params = useParams();
   const data = useAnalysisStore((u) => u.userTableData);
+  const loading = useAnalysisStore((l)=> l.loading);
   const userData = data.find((d) => d.id === params.userId);
   const setTitle = useAuthStore((t) => t.setTitle);
   useEffect(() => {
     setTitle('User Dashboard');
+    mutate(`${API_URL}/analysis/data`);
   }, [setTitle]);
-  if(!userData){
+  if(loading){
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/75">
             <Spinner />
@@ -138,9 +142,6 @@ export default function userDashboard() {
         );
   }
 
-  if (!userData) {
-    return null;
-  }
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
@@ -150,7 +151,7 @@ export default function userDashboard() {
             <div className="col-span-12 md:col-span-8">
               <ChartInteractiveGeneric
                 title="Game Stats"
-                stats={userData.userChartData}
+                stats={userData?.userChartData}
                 config={{
                   gamesPlayed: {
                     label: "Games Played",
@@ -168,13 +169,13 @@ export default function userDashboard() {
               />
             </div>
             <div className="col-span-12 md:col-span-4">
-              <LoginHistoryCard logins={userData.loginHistory} />
+              <LoginHistoryCard logins={userData?.loginHistory || []} />
             </div>
           </div>
 
-          {userData.userMatches && (
+          {userData?.userMatches && (
             <DataTable
-              data={userData.userMatches}
+              data={userData?.userMatches || []}
               columns={gameSessionColumns}
             />
           )}

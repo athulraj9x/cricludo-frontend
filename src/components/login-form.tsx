@@ -72,7 +72,7 @@ export function LoginForm({
         });
          mutate(`${API_URL}/analysis/data`);
          if(responseData.user.userType === 'agent'){
-          router.push(`/user/${responseData.user?.id || ''}`)
+          router.push(`/user/${responseData.user?.user?.id || ''}`)
          }else{
            router.push("/");
          }
