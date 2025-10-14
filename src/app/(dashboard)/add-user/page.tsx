@@ -22,7 +22,7 @@ const schema = z.object({
   createdAt: z.string(),
 });
 
-export const columns: ColumnDef<z.infer<typeof schema>>[] = [
+const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     accessorKey: "firstName",
     header: "First Name",

@@ -13,7 +13,7 @@ import UserAvatar from "@/components/user-avatar";
 import { convertSecondsToHHMMSS } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
 
-export const schema = z.object({
+const schema = z.object({
   id: z.string(),
   username: z.string().optional(),
   profilePic: z.string().optional(),

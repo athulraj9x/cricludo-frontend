@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
-export const gameSessionSchema = z.object({
+const gameSessionSchema = z.object({
   id: z.string(),
   date: z.string(),
   result: z.string(),
@@ -30,7 +30,7 @@ export const gameSessionSchema = z.object({
   endReason: z.string(),
 });
 
-export type GameSession = z.infer<typeof gameSessionSchema>;
+type GameSession = z.infer<typeof gameSessionSchema>;
 
 const gameSessionColumns: ColumnDef<GameSession>[] = [
   {
