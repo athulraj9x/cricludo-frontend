@@ -8,6 +8,8 @@ import { motion } from "framer-motion";
 import { useResendVerification, useVerifyEmail } from "@/hooks/useAuth";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter, useSearchParams } from "next/navigation";
+import { capitalize } from "@/lib/utils";
+import { useUsersAnalysisData } from "@/hooks/useAnalysisData";
 
 export default function VerifyOtpForm() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -20,6 +22,8 @@ export default function VerifyOtpForm() {
     useVerifyEmail();
   const { trigger: triggerResendVerfication } = useResendVerification();
   const verifyEmail = useAuthStore((s) => s.verifyEmail);
+  const setUser = useAuthStore((s) => s.setUser);
+  const isLogin = useAuthStore((l) => l.isLogin);
 
   const handleGoBack = () => {
     router.back();
@@ -42,7 +46,7 @@ export default function VerifyOtpForm() {
   };
 
   useEffect(() => {
-    if (searchParams.get("reverify") === "true") {
+    if (searchParams.get("reverify") === "true" || isLogin) {
       handleResend();
     }
   }, [searchParams]);
@@ -84,12 +88,36 @@ export default function VerifyOtpForm() {
     setLoading(true);
     const code = otp.join("");
     try {
-      const res = await triggerVerifyEmail({ email: verifyEmail, code });
+      const res = await triggerVerifyEmail({ email: verifyEmail, code, isLogin: isLogin });
 
       if (res.code) {
         toast.error(res.message || "❌ Invalid OTP, please try again.");
+        if (res.code === 10015) {
+          handleResend();
+        }
       } else {
-        router.back();
+        if (res.user && res.isLogin) {
+          setUser({
+            ...res.user,
+            firstName: capitalize(res.user.firstName),
+            lastName: capitalize(res.user.lastName),
+            name: `${capitalize(res.user.firstName)} ${capitalize(
+              res.user.lastName
+            )}`,
+            avatar: `${capitalize(
+              res.user.firstName?.charAt(0) || "?"
+            )}${capitalize(res.user.lastName?.charAt(0) || "?")}`,
+            userType: res?.user?.userType || "unknown",
+          });
+          useUsersAnalysisData();
+          if (res.user.userType === "agent") {
+            router.push(`/user/${res.user?.user?.id || ""}`);
+          } else {
+            router.push("/");
+          }
+        } else {
+          router.back();
+        }
         toast.success(res.message);
       }
     } catch (err: any) {

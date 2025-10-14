@@ -36,6 +36,8 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const setVerifyEmail = useAuthStore((s) => s.setVerifyEmail);
+  const setIsLogin = useAuthStore((l)=> l.setIsLogin)
   const setUser = useAuthStore((s) => s.setUser);
   const {
     register,
@@ -56,7 +58,14 @@ export function LoginForm({
         toast.info(responseData.message || "Login failed");
         return;
       }
+      
       toast.success(responseData.message || "Login successful");
+      if(!responseData.userVerified){
+          setVerifyEmail(responseData?.user?.email || '')
+          setIsLogin(true);
+          router.push('/verify-otp')
+          return;
+        }
       if (responseData.user) {
         setUser({
           ...responseData.user,

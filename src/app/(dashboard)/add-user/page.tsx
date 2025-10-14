@@ -40,8 +40,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       const router = useRouter();
     const { email, verified } = row.original;
     const setVerifyEmail = useAuthStore((s) => s.setVerifyEmail);
+    const setIsLogin = useAuthStore((l)=> l.setIsLogin)
     const handleReverification = () => {
       setVerifyEmail(email);
+      setIsLogin(false);
       router.replace("/verify-otp?reverify=true")
     }
 

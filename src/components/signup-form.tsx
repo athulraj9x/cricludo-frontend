@@ -58,7 +58,8 @@ export function SignupForm({ account, onSignupSuccess }: SignupFormProps) {
   const router = useRouter();
   const getUserType = useAuthStore((s) => s.getUserType);
   const user = useAuthStore((s)=> s.user);
-  const setVerifyEmail = useAuthStore((s)=> s.setVerifyEmail)
+  const setVerifyEmail = useAuthStore((s)=> s.setVerifyEmail);
+  const setIsLogin = useAuthStore((l)=> l.setIsLogin);
 
   const getMasterUsers = useUsersStore((s) => s.getMasterUsers);
   const masterUsers = (() => {
@@ -113,6 +114,7 @@ export function SignupForm({ account, onSignupSuccess }: SignupFormProps) {
       }
 
       setVerifyEmail(data.email);
+      setIsLogin(false)
       toast.success(responseData.message || "Registration successful");
       router.push("/verify-otp");
       setTimeout(() => {

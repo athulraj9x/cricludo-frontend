@@ -27,6 +27,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useLogout } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/authStore";
 
 export function NavUser({
   user,
@@ -39,6 +40,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const { trigger } = useLogout();
+  const logout = useAuthStore((l)=> l.logout);
   const router = useRouter();
   const handleLogout = async (e: any) => {
     e.preventDefault();
@@ -48,13 +50,13 @@ export function NavUser({
         toast.success(res.message || "Logout successful");
         router.push("/login");
       } else {
+        logout();
         toast.info(res.message || "Logout failed");
       }
     } catch (error) {
       toast.error("Logout failed", { description: (error as Error).message });
     }
   };
-  // data-[state=open]:
 
   return (
     <SidebarMenu>
