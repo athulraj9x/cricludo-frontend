@@ -63,7 +63,6 @@ export function UserProfileCard({ user }: UserProfileProps) {
 
 
   const totalSeconds = Number(user?.totalTimeSpent ?? 0);
-  console.log("user=====>", user);
 
   return (
     <div className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 xl:grid-cols-4 @container/card">
