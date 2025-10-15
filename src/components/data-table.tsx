@@ -96,7 +96,7 @@ function DraggableRow({
         transform: CSS.Transform.toString(transform),
         transition: transition,
       }}
-      onClick={() => rowClickable && router.push(`/user/${row.id}`)}
+      onClick={() => rowClickable && router.push(`/user/${row?.original?.user?.id || row.id}`)}
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
@@ -213,17 +213,19 @@ export function DataTable({
       className="w-full flex-col justify-start gap-4"
     >
       <div className="flex justify-between px-4 lg:px-6">
+        <div className="flex items-center gap-4">
         {reFetchData && userType && (
-          <div className="flex items-center gap-4">
+          <>
             {userType === "admin" && (
               <AddUserDialog userType="master" onUserAdded={reFetchData} />
             )}
             {["master", "admin"].includes(userType || "") && (
               <AddUserDialog userType="agent" onUserAdded={reFetchData} />
             )}
+            </>
+          )}
           </div>
-        )}
-        <div className="flex  justify-end gap-2 px-4 lg:px-6">
+        <div className="flex justify-end gap-2 px-4 lg:px-6">
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -8,6 +8,10 @@ export function useMasterAgentsByAdmin() {
   return useSWRMutation(`${API_URL}/user/types`, GetRequest);
 }
 
+export function useAllAgents(){
+  return useSWRMutation(`${API_URL}/user/all-agents`, GetRequest);
+}
+
 export function useAgentsByMaster(masterId:string) {
   return useSWRMutation(`${API_URL}/user/agents?masterId=${masterId}`, GetRequest);
 }

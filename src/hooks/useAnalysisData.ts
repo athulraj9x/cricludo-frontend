@@ -19,6 +19,10 @@ export function useUsersAnalysisData() {
         router.push("/login");
         return null;
       }
+      if (!res || res.error || res.status >= 400) {
+        store.setLoading(false);
+        throw new Error(res?.message || "Failed to fetch analysis data");
+      }
       return res;
     },
     {
@@ -26,6 +30,19 @@ export function useUsersAnalysisData() {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       dedupingInterval: 60_000,
+
+      onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+        if (
+          error
+        ) {
+          store.setLoading(false);
+          return;
+        }
+
+        if (retryCount >= 1) return;
+
+        setTimeout(() => revalidate({ retryCount }), 5000);
+      },
 
       onSuccess: (newData) => {
         if (!newData?.data) return;

@@ -82,7 +82,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
               className="flex bg-yellow-500 items-center space-x-1"
             >
               <IconCrown className="h-4 w-4 text-black-500" />
-              <span>VIP User</span>
+              <span>VIP</span>
             </Badge>
           )}
           {isGuest && (
@@ -91,7 +91,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
               className="flex bg-blue-300 items-center space-x-1"
             >
               <IconUser className="h-4 w-4 text-black-500" />
-              <span>Guest User</span>
+              <span>Guest</span>
             </Badge>
           )}
           {isAgent && (

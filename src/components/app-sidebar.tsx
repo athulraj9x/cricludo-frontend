@@ -3,6 +3,7 @@
 import * as React from "react";
 import {
   IconDashboard,
+  IconUsers,
   IconUsersPlus,
 } from "@tabler/icons-react";
 
@@ -27,6 +28,12 @@ const data = {
       title: "Dashboard",
       url: "/",
       icon: IconDashboard,
+    },
+    {
+      title: "Agents",
+      url: "/agents",
+      icon: IconUsers,
+      hideUser: ['master', 'agent']
     },
     {
       title: "Add User",

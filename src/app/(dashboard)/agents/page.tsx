@@ -1,15 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { useAgentsByMaster, useMasterAgentsByAdmin } from "@/hooks/useUsers";
+import {
+  useAllAgents,
+} from "@/hooks/useUsers";
 import { DataTable } from "@/components/data-table";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
 import { useUsersStore } from "@/store/usersStore";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ChangeUserPasswordDialog } from "@/components/change-password-dialog";
 import { CheckCircle } from "lucide-react";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
@@ -21,9 +21,16 @@ const schema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   createdAt: z.string(),
+  user: z.any()
+
 });
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
+  {
+    accessorKey: "user",
+    header: "userId",
+    cell: ({ row }: { row: any }) => <div>{row.original.firstName}</div>,
+  },
   {
     accessorKey: "firstName",
     header: "First Name",
@@ -128,33 +135,6 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       return <div>{format(date, "yyyy-MM-dd HH:mm:ss")}</div>;
     },
   },
-  {
-    accessorKey: "action",
-    header: "Action",
-    cell: ({ row }: { row: any }) => {
-      const user = row.original;
-      const password = {
-        analytics: row.original.password_text,
-        cricludo: row.original.user?.password_text || "",
-      };
-      const [open, setOpen] = useState(false);
-
-      return (
-        <>
-          <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-            Change Password
-          </Button>
-
-          <ChangeUserPasswordDialog
-            open={open}
-            onOpenChange={setOpen}
-            user={user}
-            password={password}
-          />
-        </>
-      );
-    },
-  },
 ];
 
 export default function AddUserPage() {
@@ -169,20 +149,15 @@ export default function AddUserPage() {
   const userType = getUserType();
   const userId = user?.id;
 
-  const { trigger: triggerAdmin, isMutating: mutatingAdmin } =
-    useMasterAgentsByAdmin();
-  const { trigger: triggerMaster, isMutating: mutatingMaster } =
-    useAgentsByMaster(userId ?? "");
+  const { trigger, isMutating } = useAllAgents();
 
   const [users, setUsersData] = useState<any[]>([]);
 
   useEffect(() => {
     if (userType === "admin") {
-      setTitle("Add Master/Agent");
-    } else {
-      setTitle("Add Agent");
+      setTitle("All Agents");
     }
-    if (userType && !["admin", "master"].includes(userType)) {
+    if (userType && !["admin"].includes(userType)) {
       router.replace("/");
     }
   }, [userType, router]);
@@ -191,9 +166,7 @@ export default function AddUserPage() {
     try {
       let res;
       if (userType === "admin") {
-        res = await triggerAdmin();
-      } else if (userType === "master" && userId) {
-        res = await triggerMaster();
+        res = await trigger();
       } else {
         return;
       }
@@ -220,12 +193,9 @@ export default function AddUserPage() {
 
   useEffect(() => {
     fetchData();
-  }, [triggerAdmin, triggerMaster, refetchUsers, userType, userId, setUsers]);
+  }, [trigger, refetchUsers, userType, userId, setUsers]);
 
-  const reFetchData = () => {
-    fetchData();
-  };
-  if (mutatingAdmin || mutatingMaster) {
+  if (isMutating) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/75">
         <Spinner />
@@ -239,8 +209,6 @@ export default function AddUserPage() {
         data={users}
         columns={columns}
         paginationConfig={{ pageIndex: 0, pageSize: 15 }}
-        userType={userType}
-        reFetchData={reFetchData}
         rowClickable={true}
       />
     </div>

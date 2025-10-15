@@ -1,72 +1,103 @@
-import { countGamesSettledToday, generateChartData, generateStats, mergeGameData } from "./helper";
+import {
+  countGamesSettledToday,
+  generateChartData,
+  generateStats,
+  mergeGameData,
+} from "./helper";
 
 export function prepareDashboardData(data: {
   analysisData: any[];
   users: any[];
   userwallets: any[];
   settledgames: any[];
-}): {
-  totalUsers: number;
-  activeUsers: number;
-  activeUserPercent: string;
-  totalRoomsCreated: number;
-  chartData: any;
-  totalCoin: number;
-  todayRoomSettled: number;
-  totalDiamond: number;
-  totalLives: number;
-  roomsByDate: Record<string, number>;
-  userTableData: any[];
-} {
+}) {
   const { analysisData, users, userwallets, settledgames } = data;
-  // 1. Aggregate total users and active users
-  const totalUsers = users.length;
-  const activeUsers = users.filter(
-    (user) => user.status === "1" || user.isActive === true
-  ).length;
-  const activeUserPercent = ((activeUsers / totalUsers) * 100).toFixed(2);
 
-  // 2. Total rooms created
-  const totalRoomsCreated = settledgames?.length || 0;
+  if (!users?.length) {
+    return {
+      totalUsers: 0,
+      activeUsers: 0,
+      activeUserPercent: "0.00",
+      totalRoomsCreated: settledgames?.length || 0,
+      chartData: { daily: [], monthly: [], yearly: [] },
+      totalCoin: 0,
+      todayRoomSettled: 0,
+      totalDiamond: 0,
+      totalLives: 0,
+      roomsByDate: {},
+      userTableData: [],
+    };
+  }
 
-  // 3. Total wallet coins, diamonds, lives
+  const walletMap = new Map(
+    userwallets.map((w) => [w.userId, w])
+  );
+  const analysisMap = new Map(
+    analysisData.map((a) => [a.userId, a])
+  );
+
   let totalCoin = 0,
     totalDiamond = 0,
-    totalLives = 0;
-  userwallets.forEach((wallet) => {
+    totalLives = 0,
+    activeUsers = 0;
+
+  for (const wallet of userwallets) {
     totalCoin += wallet.coin || 0;
     totalDiamond += wallet.diamond || 0;
     totalLives += wallet.lives || 0;
-  });
+  }
 
-  // 4. Prepare graph data (rooms created daily, monthly, yearly)
+  const totalUsers = users.length;
+  for (const user of users) {
+    if (user.status === "1" || user.isActive === true) activeUsers++;
+  }
+  const activeUserPercent = ((activeUsers / totalUsers) * 100).toFixed(2);
+
   const roomsByDate: Record<string, number> = {};
-  settledgames.forEach((room) => {
-    const date = new Date(room.createdAt || room.settledAt || Date.now())
+  for (const game of settledgames) {
+    const date = new Date(game.createdAt || game.settledAt || Date.now())
       .toISOString()
-      .slice(0, 10); // yyyy-mm-dd
+      .slice(0, 10);
     roomsByDate[date] = (roomsByDate[date] || 0) + 1;
-  });
+  }
+
+  const totalRoomsCreated = settledgames?.length || 0;
+  const todayRoomSettled = countGamesSettledToday(settledgames);
+
   const usersChartData = generateStats(settledgames, users);
-  const todayRoomSettled = countGamesSettledToday(settledgames)
+  const chartData = {
+    daily: generateChartData(users, settledgames, "daily"),
+    monthly: generateChartData(users, settledgames, "monthly"),
+    yearly: generateChartData(users, settledgames, "yearly"),
+  };
 
   const userTableData = users.map((user) => {
-    const analysis = (analysisData ?? []).find((a) => a.userId === user._id) || {};
-    const wallet = (userwallets ?? []).find((w) => w.userId === user._id) || {};
-    const userMatch = usersChartData[user._id]?.matches || [];
-    const userGameSession = analysis?.gameSessions || [];
+    const analysis = analysisMap.get(user._id) || {};
+    const wallet = walletMap.get(user._id) || {};
+    const chart = usersChartData[user._id] || {};
 
-   
+    const mergedMatches = mergeGameData(
+      chart.matches || [],
+      analysis.gameSessions || []
+    );
 
     return {
-      profilePic:  user.profile_pic || analysis.profilePic || user.google_pic || "",
+      profilePic:
+        user.profile_pic ||
+        analysis.profilePic ||
+        user.google_pic ||
+        "",
       username: user.username,
       email: user.email,
       active: user.status === "1" || user.isActive === true,
-      totalRoomsCreated: usersChartData[user._id]?.roomsCreated || 0,
-      totalGamesJoined: usersChartData[user._id]?.totalGamesPlayed || user?.gamesJoined || analysis?.gamesJoined || 0,
-      wins: usersChartData[user._id]?.totalWins || user.wins || analysis.wins || 0,
-      losses: usersChartData[user._id]?.totalLosses || user.losses || analysis.losses || 0,
+      totalRoomsCreated: chart.roomsCreated || 0,
+      totalGamesJoined:
+        chart.totalGamesPlayed ||
+        user.gamesJoined ||
+        analysis.gamesJoined ||
+        0,
+      wins: chart.totalWins || user.wins || analysis.wins || 0,
+      losses: chart.totalLosses || user.losses || analysis.losses || 0,
       coinsDistributed: analysis.coinsDistributed || 0,
       coin: wallet.coin || 0,
       diamond: wallet.diamond || 0,
@@ -76,35 +107,29 @@ export function prepareDashboardData(data: {
       gameSessions: analysis.gameSessions || [],
       activityStats: analysis.activityStats || [],
       id: user._id,
-      isVIP: user.vip_user || false,
-      isGuest: user.is_guest || false,
-      isAgent: user.is_agent || false,
+      isVIP: !!user.vip_user,
+      isGuest: !!user.is_guest,
+      isAgent: !!user.is_agent,
+      userType: user?.is_agent? "Agent" : user?.is_guest? "Guest" : "",
       followerCount: user.followersCount || 0,
       followingCount: user.followingCount || 0,
       rating: user.rating || 0,
       lastLogin: user.last_login || "N/A",
-      userChartData: { daily: usersChartData[user._id]?.daily || {}, monthly: usersChartData[user._id]?.monthly || {}, yearly: usersChartData[user._id]?.yearly || {}},
-      userMatches: mergeGameData(userMatch,userGameSession)
+      userChartData: {
+        daily: chart.daily || {},
+        monthly: chart.monthly || {},
+        yearly: chart.yearly || {},
+      },
+      userMatches: mergedMatches,
     };
   });
-  const chartData = {daily: generateChartData(users, settledgames, 'daily'),
-     monthly: generateChartData(users, settledgames , 'monthly'), yearly : generateChartData(users, settledgames, 'yearly')};
-  // useAnalysisStore.getState().setTotalUsers(totalUsers);
-  // useAnalysisStore.getState().setActiveUsers(activeUsers);
-  // useAnalysisStore.getState().setActiveUserPercent(activeUserPercent);
-  // useAnalysisStore.getState().setTotalRoomsCreated(totalRoomsCreated);
-  // useAnalysisStore.getState().setTotalCoin(totalCoin);
-  // useAnalysisStore.getState().setTotalDiamond(totalDiamond);
-  // useAnalysisStore.getState().setTotalLives(totalLives);
-  // useAnalysisStore.getState().setRoomsByDate(roomsByDate);
-  // useAnalysisStore.getState().setUserTableData(userTableData);
 
   return {
     totalUsers,
     activeUsers,
-    chartData,
     activeUserPercent,
     totalRoomsCreated,
+    chartData,
     todayRoomSettled,
     totalCoin,
     totalDiamond,
