@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { useSignup } from "@/hooks/useAuth";
 import { useUsersStore } from "@/store/usersStore";
 import { useAuthStore } from "@/store/authStore";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 const baseSchema = z
   .object({
@@ -60,6 +62,7 @@ export function SignupForm({ account, onSignupSuccess }: SignupFormProps) {
   const user = useAuthStore((s)=> s.user);
   const setVerifyEmail = useAuthStore((s)=> s.setVerifyEmail);
   const setIsLogin = useAuthStore((l)=> l.setIsLogin);
+  const [showPassword, setShowPassword] = useState(false);
 
   const getMasterUsers = useUsersStore((s) => s.getMasterUsers);
   const masterUsers = (() => {
@@ -198,7 +201,24 @@ export function SignupForm({ account, onSignupSuccess }: SignupFormProps) {
 
         <div className="flex flex-col space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" {...register("password")} />
+          <div className="relative">
+          <Input id="password" type={showPassword ? "text" : "password"} {...register("password")} />
+              {/* <Input
+                id="analytics-password"
+                type={showAnalyticsPassword ? "text" : "password"}
+                value={analyticsPassword}
+                onChange={(e) => setAnalyticsPassword(e.target.value)}
+                placeholder="Enter new password"
+                required
+              /> */}
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           {errors.password && (
             <p className="text-sm text-red-600">{errors.password.message}</p>
           )}
