@@ -79,13 +79,14 @@ export function prepareDashboardData(data: {
       isVIP: user.vip_user || false,
       isGuest: user.is_guest || false,
       isAgent: user.is_agent || false,
+      followerCount: user.followersCount || 0,
+      followingCount: user.followingCount || 0,
       rating: user.rating || 0,
       lastLogin: user.last_login || "N/A",
       userChartData: { daily: usersChartData[user._id]?.daily || {}, monthly: usersChartData[user._id]?.monthly || {}, yearly: usersChartData[user._id]?.yearly || {}},
       userMatches: mergeGameData(userMatch,userGameSession)
     };
   });
-  console.log("userTableData===>", userTableData)
   const chartData = {daily: generateChartData(users, settledgames, 'daily'),
      monthly: generateChartData(users, settledgames , 'monthly'), yearly : generateChartData(users, settledgames, 'yearly')};
   // useAnalysisStore.getState().setTotalUsers(totalUsers);

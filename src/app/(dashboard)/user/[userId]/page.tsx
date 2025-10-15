@@ -30,6 +30,7 @@ const gameSessionSchema = z.object({
   endedAt: z.string(),
   duration: z.number(),
   endReason: z.string(),
+  totalOver: z.number()
 });
 
 type GameSession = z.infer<typeof gameSessionSchema>;
@@ -80,6 +81,11 @@ const gameSessionColumns: ColumnDef<GameSession>[] = [
     accessorKey: "coinType",
     header: "Coin Type",
     cell: ({ row }) => <div>{row.original.coinType}</div>,
+  },
+  {
+    accessorKey: "totalOver",
+    header: "Total Over",
+    cell: ({ row }) => <div>{row.original.totalOver}</div>,
   },
   {
     accessorKey: "gameId",

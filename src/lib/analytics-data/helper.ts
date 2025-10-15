@@ -121,6 +121,7 @@ export function generateStats(games: Game[], users: User[]): StatsByUser {
         gameType: game.gameType,
         category: game.category,
         winnerPrize: game.players[0].winnerPrize,
+        totalOver: game.result.find((p: any)=> p.rank === 1)?.totalOver || 0,
         entryValue: game.players[0].entryValue,
         coinType: game.players[0].coinType,
 

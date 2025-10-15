@@ -41,6 +41,8 @@ interface UserProfileProps {
     totalRoomsCreated: number;
     totalTimeSpent: number;
     coinDistributed: number;
+    followerCount?: number;
+    followingCount?: number;
     lastLogin: string;
     coin: number;
     diamond: number;
@@ -61,56 +63,78 @@ export function UserProfileCard({ user }: UserProfileProps) {
 
 
   const totalSeconds = Number(user?.totalTimeSpent ?? 0);
+  console.log("user=====>", user);
 
   return (
     <div className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 xl:grid-cols-4 @container/card">
       {/* Profile Card */}
       <Card className="shadow-md transition hover:shadow-lg">
-        <CardHeader className="items-center space-y-3">
-          <div className="relative w-24 h-24 mx-auto">
-            <Avatar
-              className={`w-24 h-24 ring-2 ring-offset-2 ${
-                user?.isVIP ? "ring-yellow-400" : "ring-primary"
-              }`}
-            >
-              <AvatarImage src={user?.profilePic} alt={user?.username} />
-              <AvatarFallback className="bg-accent text-black ring-2 ring-offset-2 flex items-center justify-center text-3xl font-medium">
-                {capitalize(user?.username.charAt(0) || "")}
-              </AvatarFallback>
-            </Avatar>
+  <CardHeader className="items-center space-y-4">
+    <div className="relative w-24 h-24 mx-auto">
+      <Avatar
+        className={`w-24 h-24 ring-2 ring-offset-2 ${
+          user?.isVIP ? "ring-yellow-400" : "ring-primary"
+        }`}
+      >
+        <AvatarImage src={user?.profilePic} alt={user?.username} />
+        <AvatarFallback className="bg-accent text-black ring-2 ring-offset-2 flex items-center justify-center text-3xl font-medium">
+          {capitalize(user?.username.charAt(0) || "")}
+        </AvatarFallback>
+      </Avatar>
 
-            {user?.isVIP && (
-              <div className="absolute -bottom-1 -right-1 bg-yellow-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
-                <IconCrown size={14} className="mr-1" />
-                <span className="text-xs font-semibold">VIP</span>
-              </div>
-            )}
+      {user?.isVIP && (
+        <div className="absolute -bottom-1 -right-1 bg-yellow-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
+          <IconCrown size={14} className="mr-1" />
+          <span className="text-xs font-semibold">VIP</span>
+        </div>
+      )}
 
-            {user?.isGuest && (
-              <div className="absolute -bottom-1 -right-1 bg-blue-300 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
-                <IconUser className="mr-1" />
-                <span className="text-xs font-semibold">Guest</span>
-              </div>
-            )}
-            {user?.isAgent && (
-              <div className="absolute -bottom-1 -right-1 bg-green-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
-                <IconShield className="mr-1" />
-                <span className="text-xs font-semibold">Agent</span>
-              </div>
-            )}
-          </div>
+      {user?.isGuest && (
+        <div className="absolute -bottom-1 -right-1 bg-blue-300 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
+          <IconUser size={14} className="mr-1" />
+          <span className="text-xs font-semibold">Guest</span>
+        </div>
+      )}
 
-          <CardTitle className="text-xl font-bold text-center tracking-tight">
-            {user?.username}
-          </CardTitle>
+      {user?.isAgent && (
+        <div className="absolute -bottom-1 -right-1 bg-green-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
+          <IconShield size={14} className="mr-1" />
+          <span className="text-xs font-semibold">Agent</span>
+        </div>
+      )}
+    </div>
 
-          <CardDescription className="text-sm text-center text-muted-foreground">
-            <a href={`mailto:${user?.email}`} className="hover:underline">
-              {user?.email}
-            </a>
-          </CardDescription>
-        </CardHeader>
-      </Card>
+    <CardTitle className="text-xl font-bold text-center tracking-tight mb-0">
+      {user?.username}
+    </CardTitle>
+
+    <CardDescription className="text-sm text-center text-muted-foreground mt-0">
+      <a href={`mailto:${user?.email}`} className="hover:underline">
+        {user?.email}
+      </a>
+    <div className="flex items-center justify-center space-x-6 mt-1">
+      <div className="flex flex-row items-center gap-2">
+        <span className="text-lg font-semibold text-foreground">
+          {user?.followerCount ?? 0}
+        </span>
+        <span className="text-xs text-muted-foreground uppercase tracking-wide">
+          Followers
+        </span>
+      </div>
+      <div className="h-6 w-px bg-border" />
+      <div className="flex flex-row items-center gap-2">
+        <span className="text-lg font-semibold text-foreground">
+          {user?.followingCount ?? 0}
+        </span>
+        <span className="text-xs text-muted-foreground uppercase tracking-wide">
+          Following
+        </span>
+      </div>
+    </div>
+    </CardDescription>
+
+  </CardHeader>
+</Card>
 
       {/* Game Stats */}
       <Card className="shadow-md transition hover:shadow-lg">

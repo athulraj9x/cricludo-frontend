@@ -34,6 +34,7 @@ export interface Player {
   userId: string;
   userName: string;
   winnerPrize: number;
+  totalOver: number;
   entryValue: number;
   socketId: string;
   exitAttempt: number;
@@ -102,6 +103,7 @@ export type MatchDetail = {
   gameType: string;
   category: string;
   winnerPrize?: number;
+  totalOver? : number;
   entryValue?: number;
   coinType?: string; 
 };
