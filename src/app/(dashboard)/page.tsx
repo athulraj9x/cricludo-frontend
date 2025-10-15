@@ -7,7 +7,11 @@ import { ColumnDef, Row } from "@tanstack/react-table";
 import React, { useEffect } from "react";
 import z from "zod";
 import { ChartInteractiveGeneric } from "@/components/chart-interactive";
-import { IconCrown, IconRating12Plus } from "@tabler/icons-react";
+import {
+  IconCrown,
+  IconShield,
+  IconUser,
+} from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
 import UserAvatar from "@/components/user-avatar";
 import { convertSecondsToHHMMSS } from "@/lib/utils";
@@ -29,6 +33,7 @@ const schema = z.object({
   totalTimeSpent: z.string().optional(),
   isVIP: z.boolean().optional(),
   isGuest: z.boolean().optional(),
+  isAgent: z.boolean().optional(),
   lastLogin: z.string().optional(),
 });
 // ring-2
@@ -39,7 +44,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "Username",
     cell: ({ row }) => (
       <div className="flex flex-col items-center space-y-2 w-40">
-        <UserAvatar username={row.original.username || ''} profilePic={row.original.profilePic || ''} />
+        <UserAvatar
+          username={row.original.username || ""}
+          profilePic={row.original.profilePic || ""}
+        />
         <span className="text-sm">{row.original.username}</span>
       </div>
     ),
@@ -65,7 +73,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "userType",
     header: "User Type",
     cell: ({ row }) => {
-      const { isVIP, isGuest } = row.original;
+      const { isVIP, isGuest, isAgent } = row.original;
       return (
         <div className="flex  flex-col items-center">
           {isVIP && (
@@ -82,8 +90,17 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
               variant="outline"
               className="flex bg-blue-300 items-center space-x-1"
             >
-              <IconRating12Plus className="h-4 w-4 text-black-500" />
+              <IconUser className="h-4 w-4 text-black-500" />
               <span>Guest User</span>
+            </Badge>
+          )}
+          {isAgent && (
+            <Badge
+              variant="outline"
+              className="flex bg-green-400 items-center space-x-1"
+            >
+              <IconShield className="h-4 w-4 text-black-500" />
+              <span>Agent</span>
             </Badge>
           )}
         </div>
@@ -133,14 +150,14 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 export default function DashboardPage() {
   const userTableData = useAnalysisStore((state) => state.userTableData);
   const chartData = useAnalysisStore((state) => state.chartData);
-  const user = useAuthStore((s)=> s.user);
+  const user = useAuthStore((s) => s.user);
   const router = useRouter();
 
   const setTitle = useAuthStore((t) => t.setTitle);
   useEffect(() => {
-    setTitle('Dashboard Overview');
-    if(user.userType === 'agent'){
-      router.push(`user/${user?.user?.id || ''}`)
+    setTitle("Dashboard Overview");
+    if (user.userType === "agent") {
+      router.push(`user/${user?.user?.id || ""}`);
     }
   }, [setTitle, user]);
 

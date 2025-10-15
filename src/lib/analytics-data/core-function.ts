@@ -78,6 +78,7 @@ export function prepareDashboardData(data: {
       id: user._id,
       isVIP: user.vip_user || false,
       isGuest: user.is_guest || false,
+      isAgent: user.is_agent || false,
       rating: user.rating || 0,
       lastLogin: user.last_login || "N/A",
       userChartData: { daily: usersChartData[user._id]?.daily || {}, monthly: usersChartData[user._id]?.monthly || {}, yearly: usersChartData[user._id]?.yearly || {}},

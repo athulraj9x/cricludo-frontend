@@ -18,6 +18,8 @@ import {
   IconCalendarTime,
   IconRating12Plus,
   IconTimeline,
+  IconShield,
+  IconUser,
 } from "@tabler/icons-react";
 
 import { format, formatDistanceToNow } from "date-fns";
@@ -30,7 +32,8 @@ interface UserProfileProps {
     profilePic: string;
     active: boolean;
     isVIP: boolean;
-    isGuest: boolean;
+    isGuest?: boolean;
+    isAgent?: boolean;
     rating: number;
     wins: number;
     losses: number;
@@ -47,25 +50,17 @@ interface UserProfileProps {
 
 export function UserProfileCard({ user }: UserProfileProps) {
   const winRate =
-  user?.totalGamesJoined > 0 && typeof user?.wins === "number"
-    ? ((user.wins / user.totalGamesJoined) * 100).toFixed(1)
-    : "0.0";
+    user?.totalGamesJoined > 0 && typeof user?.wins === "number"
+      ? ((user.wins / user.totalGamesJoined) * 100).toFixed(1)
+      : "0.0";
 
-const formattedLastLogin =
-  user?.lastLogin && !isNaN(new Date(user.lastLogin).getTime())
-    ? format(new Date(user.lastLogin), "dd MMM yyyy, HH:mm")
-    : "";
+  const formattedLastLogin =
+    user?.lastLogin && !isNaN(new Date(user.lastLogin).getTime())
+      ? format(new Date(user.lastLogin), "dd MMM yyyy, HH:mm")
+      : "";
 
-const lastSeenAgo =
-  user?.lastLogin && !isNaN(new Date(user.lastLogin).getTime())
-    ? formatDistanceToNow(new Date(user.lastLogin), { addSuffix: true })
-    : "";
-    
-    const totalSeconds = Number(user?.totalTimeSpent ?? 0);
-    const durationDate = new Date(totalSeconds * 1000);
-    console.log(
-      " user?.totalTimeSpent", totalSeconds
-    )
+
+  const totalSeconds = Number(user?.totalTimeSpent ?? 0);
 
   return (
     <div className="grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 xl:grid-cols-4 @container/card">
@@ -79,7 +74,9 @@ const lastSeenAgo =
               }`}
             >
               <AvatarImage src={user?.profilePic} alt={user?.username} />
-              <AvatarFallback className="bg-accent text-black ring-2 ring-offset-2 flex items-center justify-center text-3xl font-medium">{capitalize(user?.username.charAt(0) || '')}</AvatarFallback>
+              <AvatarFallback className="bg-accent text-black ring-2 ring-offset-2 flex items-center justify-center text-3xl font-medium">
+                {capitalize(user?.username.charAt(0) || "")}
+              </AvatarFallback>
             </Avatar>
 
             {user?.isVIP && (
@@ -88,10 +85,17 @@ const lastSeenAgo =
                 <span className="text-xs font-semibold">VIP</span>
               </div>
             )}
+
             {user?.isGuest && (
-              <div className="absolute -bottom-1 -right-1 bg-blue-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-primary">
-                <IconRating12Plus size={14} className="mr-1" />
+              <div className="absolute -bottom-1 -right-1 bg-blue-300 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
+                <IconUser className="mr-1" />
                 <span className="text-xs font-semibold">Guest</span>
+              </div>
+            )}
+            {user?.isAgent && (
+              <div className="absolute -bottom-1 -right-1 bg-green-400 text-black px-2 py-0.5 rounded-full flex items-center justify-center ring-2 ring-white">
+                <IconShield className="mr-1" />
+                <span className="text-xs font-semibold">Agent</span>
               </div>
             )}
           </div>
@@ -199,7 +203,6 @@ const lastSeenAgo =
     </div>
   );
 }
-
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
