@@ -218,7 +218,7 @@ export function UserProfileCard({ user }: UserProfileProps) {
               Time Spent (HH:MM:SS)
             </span>
             <span className="font-semibold text-base">
-              {convertSecondsToHHMMSS(totalSeconds)}
+              {convertSecondsToHHMMSS(totalSeconds/1000)}
             </span>
           </div>
         </CardContent>

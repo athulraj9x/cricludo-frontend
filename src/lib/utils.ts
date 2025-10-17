@@ -16,15 +16,11 @@ export const userTypeCollection = {
   "5": "agent"
 } as const;
 
-export function convertSecondsToHHMMSS(seconds: number) {
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-
-  // Pad with leading zeros if needed
-  const hoursStr = String(hrs).padStart(2, '0');
-  const minutesStr = String(mins).padStart(2, '0');
-  const secondsStr = String(secs).padStart(2, '0');
-
-  return `${hoursStr} hour, ${minutesStr} min, ${secondsStr} sec`;
+export function convertSecondsToHHMMSS(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${hours.toString().padStart(2, '0')}:${minutes
+    .toString()
+    .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
